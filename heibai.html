@@ -1,0 +1,2633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HeiBai AI</title>
+<meta property="og:title" content="HeiBai AI">
+<meta property="og:description" content="Chat with HeiBai AI, your personal AI assistant, and explore powerful AI tools!">
+<meta property="og:image" content="">
+<meta property="og:url" content="">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HeiBai AI">
+<meta name="theme-color" content="#00a67e">
+<meta name="color-scheme" content="light dark" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://js.puter.com/v2/"></script>
+
+<style>
+:root {
+  --bg: #ffffff;
+  --panel: #f7f7f8;
+  --elev: #ffffff;
+  --text: #374151;
+  --sub: #6b7280;
+  --accent: #00a67e;
+  --accent-weak: #d1fae5;
+  --border: #e5e7eb;
+  --user: #00a67e;
+  --bot: #00a67e;
+  --danger: #ef4444;
+  --muted: #9ca3af;
+  --bubble: #f9fafb;
+  --bubble-user: #dcfce7;
+  --code: #f3f4f6;
+  --kbd: #f9fafb;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+  --sidebar-width: 280px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --transition: all 0.2s ease;
+  --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+body.dark {
+  --bg: #111827;
+  --panel: #1f2937;
+  --elev: #374151;
+  --text: #f9fafb;
+  --sub: #d1d5db;
+  --accent: #10b981;
+  --accent-weak: #065f46;
+  --border: #374151;
+  --user: #10b981;
+  --bot: #10b981;
+  --danger: #ef4444;
+  --muted: #9ca3af;
+  --bubble: #374151;
+  --bubble-user: #065f46;
+  --code: #1f2937;
+  --kbd: #374151;
+  --shadow: 0 4px 16px rgba(0,0,0,0.25);
+  --shadow-lg: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: 1fr;
+  transition: all 0.2s ease;
+}
+
+.sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.new-chat-btn {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.new-chat-btn:hover {
+  background: color-mix(in srgb, var(--accent) 90%, black);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 4px;
+}
+
+.chat-item:hover {
+  background: var(--elev);
+}
+
+.chat-item.active {
+  background: var(--accent-weak);
+  color: var(--accent);
+}
+
+.chat-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.chat-delete {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.chat-item:hover .chat-delete {
+  opacity: 1;
+}
+
+.chat-delete:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.footer-link {
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.footer-link:hover {
+  color: var(--text);
+  background: var(--elev);
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.chat-header {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-title-header {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: var(--elev);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  scroll-behavior: smooth;
+}
+
+.message {
+  max-width: 800px;
+  margin: 0 auto 32px auto;
+  display: flex;
+  gap: 16px;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.message-avatar.user {
+  background: var(--accent);
+  color: white;
+}
+
+.message-avatar.bot {
+  background: var(--bot);
+  color: white;
+}
+
+.message-content {
+  flex: 1;
+  line-height: 1.6;
+}
+
+.message.user .message-content {
+  background: var(--bubble-user);
+  padding: 16px;
+  border-radius: 16px 16px 4px 16px;
+  border: 1px solid var(--border);
+}
+
+.message.bot .message-content {
+  padding: 16px 0;
+}
+
+.message-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.message:hover .message-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.action-btn:hover {
+  background: var(--elev);
+  color: var(--text);
+}
+
+.chat-input-container {
+  padding: 24px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.chat-input-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--elev);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.chat-input {
+  width: 100%;
+  min-height: 24px;
+  max-height: 200px;
+  padding: 16px 50px 16px 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  resize: none;
+  line-height: 1.5;
+}
+
+.chat-input::placeholder {
+  color: var(--muted);
+}
+
+.send-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.send-btn:hover {
+  background: color-mix(in srgb, var(--accent) 90%, black);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+pre {
+  background: var(--code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  position: relative;
+}
+
+code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+pre:hover .copy-btn {
+  opacity: 1;
+}
+
+.typing-indicator {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: typing 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--border);
+  border-top: 2px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #00a67e, #059669);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.logo-text {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  padding: 0;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--elev);
+  color: var(--text);
+}
+
+.settings-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  padding: 0 24px;
+}
+
+.settings-tab {
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  cursor: pointer;
+  color: var(--sub);
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+}
+
+.settings-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.settings-tab:hover {
+  color: var(--text);
+}
+
+.settings-content {
+  padding: 0 24px 24px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.settings-panel {
+  display: none;
+}
+
+.settings-panel.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--elev);
+  color: var(--text);
+  font: inherit;
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-weak);
+}
+
+.form-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.form-check input[type="checkbox"] {
+  margin: 0;
+}
+
+.theme-options {
+  display: flex;
+  gap: 16px;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.theme-option input[type="radio"] {
+  display: none;
+}
+
+.theme-preview {
+  width: 48px;
+  height: 32px;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  transition: var(--transition);
+}
+
+.theme-preview.light {
+  background: linear-gradient(135deg, #ffffff, #f3f4f6);
+}
+
+.theme-preview.dark {
+  background: linear-gradient(135deg, #1f2937, #374151);
+}
+
+.theme-preview.auto {
+  background: linear-gradient(135deg, #ffffff 50%, #1f2937 50%);
+}
+
+.theme-option input[type="radio"]:checked + .theme-preview {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-weak);
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 14px;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn.secondary {
+  background: var(--elev);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn.danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px 24px 24px;
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin: 8px 0;
+}
+
+#fontSizeValue {
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 8px;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 3000;
+  animation: slideInRight 0.3s ease;
+}
+
+.toast.error {
+  background: var(--danger);
+}
+
+/* 知识库管理样式 */
+.knowledge-status {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.status-item:last-child {
+  margin-bottom: 0;
+}
+
+.status-label {
+  font-weight: 500;
+  color: var(--sub);
+}
+
+.status-value {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.knowledge-files {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.knowledge-file-item {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.knowledge-file-item:last-child {
+  border-bottom: none;
+}
+
+.file-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.file-description {
+  font-size: 12px;
+  color: var(--sub);
+  margin-bottom: 4px;
+}
+
+.file-keywords {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.knowledge-stats {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stat-item:last-child {
+  margin-bottom: 0;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: var(--sub);
+}
+
+.stat-value {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--sub);
+}
+
+.no-files {
+  text-align: center;
+  padding: 20px;
+  color: var(--sub);
+  font-style: italic;
+}
+
+/* 调试面板样式 */
+.debug-info {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.debug-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.debug-label {
+  font-weight: 500;
+  color: var(--sub);
+}
+
+.debug-console {
+  background: var(--code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.console-line {
+  margin-bottom: 4px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.console-line:last-child {
+  border-bottom: none;
+}
+
+.btn.small {
+  padding: 4px 8px;
+  font-size: 11px;
+  min-height: auto;
+}
+
+@media (max-width: 768px) {
+  body {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    width: var(--sidebar-width);
+    height: 100%;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+  
+  .sidebar-header {
+    padding-top: 50px;
+  }
+  
+  .menu-toggle {
+    display: block;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1001;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-container">
+            <div class="logo">H</div>
+            <div class="logo-text">HeiBai AI</div>
+        </div>
+        <button class="new-chat-btn" id="newChatBtn">
+            <i class="fas fa-plus"></i>
+            New Chat
+        </button>
+    </div>
+    
+    <div class="sidebar-content" id="chatHistory">
+    </div>
+    
+    <div class="sidebar-footer">
+        <div class="footer-links">
+            <a href="#" class="footer-link" id="settingsBtn">
+                <i class="fas fa-cog"></i>
+                Settings
+            </a>
+            <a href="https://discord.gg/XfbwjPSYJU" class="footer-link" target="_blank">
+                <i class="fab fa-discord"></i>
+                Join Discord
+            </a>
+            <a href="#" class="footer-link" id="clearAllBtn">
+                <i class="fas fa-trash"></i>
+                Clear All
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="chat-header">
+        <div class="chat-title-header" id="chatTitle">New Chat</div>
+        <div class="header-actions">
+            <button class="icon-btn" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+    </div>
+    
+    <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+            <textarea 
+                class="chat-input" 
+                id="chatInput" 
+                placeholder="Type a message..."
+                rows="1"
+            ></textarea>
+            <button class="send-btn" id="sendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        <div class="input-hint">
+            Press <strong>Enter</strong> to send, <strong>Shift + Enter</strong> for new line
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Settings</h3>
+            <button class="modal-close" id="closeSettings">&times;</button>
+        </div>
+        
+        <div class="settings-tabs">
+            <button class="settings-tab active" data-tab="api">API Settings</button>
+            <button class="settings-tab" data-tab="appearance">Appearance</button>
+            <button class="settings-tab" data-tab="knowledge">知识库</button>
+            <button class="settings-tab" data-tab="advanced">Advanced</button>
+        </div>
+        
+        <div class="settings-content">
+            <div class="settings-panel active" id="api-settings">
+                <div class="form-group">
+                    <label class="form-label" for="providerSelect">AI Provider</label>
+                    <select class="form-input" id="providerSelect">
+                        <option value="puter">Puter.js (免费)</option>
+                        <option value="gemini">Google Gemini</option>
+                        <option value="openai">OpenAI</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="modelSelect">Model</label>
+                    <select class="form-input" id="modelSelect">
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="apiKeyInput">Custom API Key</label>
+                    <input 
+                        type="password" 
+                        class="form-input" 
+                        id="apiKeyInput" 
+                        placeholder="Leave empty to use default key pool"
+                    >
+                    <small class="form-help">Enter your personal API key for better stability</small>
+                </div>
+            </div>
+            
+            <div class="settings-panel" id="appearance-settings">
+                <h3>Appearance Settings</h3>
+                <div class="form-group">
+                    <label for="themeToggle">Theme</label>
+                    <div class="theme-options">
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="light" checked>
+                            <span class="theme-preview light"></span>
+                            <span>Light</span>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="dark">
+                            <span class="theme-preview dark"></span>
+                            <span>Dark</span>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="auto">
+                            <span class="theme-preview auto"></span>
+                            <span>Auto</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fontSizeSlider">Font Size</label>
+                    <div class="slider-container">
+                        <input type="range" id="fontSizeSlider" min="12" max="20" value="14">
+                        <span id="fontSizeValue">14px</span>
+                    </div>
+                </div>
+            </div>
+            
+                    <div class="settings-panel" id="knowledge-settings">
+            <h3>知识库管理</h3>
+            
+            <div class="form-group">
+                <label>知识库状态</label>
+                <div class="knowledge-status">
+                    <div class="status-item">
+                        <span class="status-label">已加载文件:</span>
+                        <span class="status-value" id="knowledgeFileCount">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">索引关键词:</span>
+                        <span class="status-value" id="knowledgeKeywordCount">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">最后更新:</span>
+                        <span class="status-value" id="knowledgeLastUpdate">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>知识库文件列表</label>
+                <div class="knowledge-files" id="knowledgeFilesList">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button class="btn secondary" id="refreshKnowledgeBtn">
+                    <i class="fas fa-refresh"></i> 刷新知识库
+                </button>
+                <button class="btn secondary" id="testKnowledgeBtn">
+                    <i class="fas fa-test"></i> 测试知识库
+                </button>
+                <button class="btn secondary" id="debugKnowledgeBtn">
+                    <i class="fas fa-bug"></i> 调试信息
+                </button>
+            </div>
+            
+            <div class="form-group">
+                <label>知识库使用统计</label>
+                <div class="knowledge-stats" id="knowledgeStats">
+                    <div class="stat-item">
+                        <span class="status-label">本次会话使用:</span>
+                        <span class="stat-value" id="sessionUsage">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="status-label">总使用次数:</span>
+                        <span class="stat-value" id="totalUsage">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>调试信息</label>
+                <div class="debug-info" id="debugInfo">
+                    <div class="debug-item">
+                        <span class="debug-label">控制台日志:</span>
+                        <button class="btn small" onclick="clearConsole()">清除</button>
+                    </div>
+                    <div class="debug-console" id="debugConsole">
+                        <div class="console-line">等待操作...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <div class="settings-panel" id="advanced-settings">
+                <div class="form-group">
+                    <label class="form-check">
+                        <input type="checkbox" id="autoSaveCheckbox" checked>
+                        <span>Auto-save conversations</span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-check">
+                        <input type="checkbox" id="streamResponseCheckbox">
+                        <span>Stream responses (Experimental)</span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn danger" id="clearDataBtn">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn secondary" id="cancelSettings">Cancel</button>
+            <button class="btn primary" id="saveSettings">Save Settings</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const API_CONFIGS = {
+    puter: {
+        keys: ['free'],
+        models: ['gpt-4o-mini', 'claude-3.5-haiku', 'llama-3.1-8b'],
+        baseUrl: 'https://api.puter.com'
+    },
+    gemini: {
+        keys: [
+            'AIzaSyCeKe-0_aVgcL4TMyUhwQsWXtiHQxmIm4Q',
+            'AIzaSyDx8a8QFBDxMN8c8h-L-qrSerCpAjAAUng',
+            'AIzaSyAHeDk9eBmrXSNpb7MHYV0U5BFMhK629kQ',
+            'AIzaSyDAeHwXUa-6tod2jBhJrSVbmw2KBa4lxoU',
+            'AIzaSyBL5aaFetan2YHwrB-vgqmRr0W62DH4Qh4',
+            'AIzaSyCihwhlVBdkCCZ8OXl4mKmh77u1m8dgU14',
+            'AIzaSyAIX6q4NN19tCNhQLKTm5HbDQrYoxTuYW0',
+            'AIzaSyDLOlg_XqMW3mJmYx17_ctJIPV3EQZa3p4',
+            'AIzaSyCzSQZayCMcMIUtwWZBbWvtRkfMy-eZbvc',
+            'AIzaSyA40By-TjbAIpyJQ8QXCPi8wfJl6Xj7MJU',
+            'AIzaSyDOHXq2vcgAl_bQI0SDo4EXBDsUpmsBDSs',
+            'AIzaSyDtJ9f8lrud97P50zShuM5xEm1ulKLQ7q8'
+        ],
+        models: ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-1.0-pro'],
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models'
+    },
+    openai: {
+        keys: ['sk-your-openai-key-here'],
+        models: ['gpt-4o-mini', 'gpt-4o', 'gpt-3.5-turbo'],
+        baseUrl: 'https://api.openai.com/v1'
+    }
+};
+
+let currentAPIKeyIndex = 0;
+let currentProvider = 'gemini';
+let currentModel = 'gemini-1.5-flash';
+let conversations = JSON.parse(localStorage.getItem('heibai_conversations') || '[]');
+let currentConversationId = localStorage.getItem('heibai_current_conversation');
+
+// 知识库系统变量
+let knowledgeBase = [];
+let knowledgeIndex = {};
+let knowledgeUsageStats = {
+    sessionUsage: 0,
+    totalUsage: parseInt(localStorage.getItem('heibai_knowledge_total_usage') || '0')
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+function initializeApp() {
+    loadSettings();
+    loadKnowledgeBase(); // 加载知识库
+    
+    if (!conversations.length) {
+        createNewConversation();
+    }
+    
+    if (!currentConversationId && conversations.length > 0) {
+        currentConversationId = conversations[0].id;
+    }
+    
+    renderChatHistory();
+    renderMessages();
+    updateChatTitle();
+    setupEventListeners();
+    loadTheme();
+    
+    console.log('HeiBai AI initialized successfully');
+    console.log('Knowledge base loaded:', knowledgeBase.length, 'files');
+    
+    if (!localStorage.getItem('heibai_welcome_shown')) {
+        setTimeout(() => {
+            showToast('Welcome to HeiBai AI! Press Ctrl+N to start a new chat', 'info');
+            localStorage.setItem('heibai_welcome_shown', 'true');
+        }, 1000);
+    }
+}
+
+function loadSettings() {
+    currentProvider = localStorage.getItem('heibai_provider') || 'gemini';
+    currentModel = localStorage.getItem('heibai_model') || 'gemini-1.5-flash';
+    
+    const savedTheme = localStorage.getItem('heibai_theme') || 'light';
+    setTheme(savedTheme);
+    
+    const savedFontSize = localStorage.getItem('heibai_font_size') || '14';
+    document.documentElement.style.setProperty('--font-size', savedFontSize + 'px');
+    
+    const autoSave = localStorage.getItem('heibai_auto_save') !== 'false';
+    const streamResponse = localStorage.getItem('heibai_stream_response') === 'true';
+    
+    document.getElementById('autoSaveCheckbox').checked = autoSave;
+    document.getElementById('streamResponseCheckbox').checked = streamResponse;
+    
+    document.getElementById('fontSizeSlider').value = savedFontSize;
+    document.getElementById('fontSizeValue').textContent = savedFontSize + 'px';
+}
+
+function setupEventListeners() {
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('chatInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    document.getElementById('chatInput').addEventListener('input', autoResizeTextarea);
+    
+    document.getElementById('newChatBtn').addEventListener('click', createNewConversation);
+    
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    
+    document.getElementById('settingsBtn').addEventListener('click', openSettings);
+    document.getElementById('cancelSettings').addEventListener('click', closeSettings);
+    document.getElementById('saveSettings').addEventListener('click', saveSettings);
+    document.getElementById('closeSettings').addEventListener('click', closeSettings);
+    
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            const tabName = e.target.dataset.tab;
+            switchSettingsTab(tabName);
+        });
+    });
+    
+    document.getElementById('providerSelect').addEventListener('change', updateModelOptions);
+    
+    document.querySelectorAll('input[name="theme"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            setTheme(e.target.value);
+        });
+    });
+    
+    document.getElementById('fontSizeSlider').addEventListener('input', (e) => {
+        const size = e.target.value;
+        document.getElementById('fontSizeValue').textContent = size + 'px';
+        document.documentElement.style.setProperty('--font-size', size + 'px');
+    });
+    
+    document.getElementById('clearAllBtn').addEventListener('click', clearAllConversations);
+    document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+    
+    // 知识库相关事件监听器
+    document.getElementById('refreshKnowledgeBtn').addEventListener('click', loadKnowledgeBase);
+    document.getElementById('testKnowledgeBtn').addEventListener('click', testKnowledgeBase);
+    document.getElementById('debugKnowledgeBtn').addEventListener('click', showDebugInfo);
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            switch (e.key) {
+                case 'n':
+                    e.preventDefault();
+                    createNewConversation();
+                    break;
+                case ',':
+                    e.preventDefault();
+                    openSettings();
+                    break;
+                case 'k':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        clearAllConversations();
+                    }
+                    break;
+            }
+        }
+        
+        if (e.key === 'Escape') {
+            closeSettings();
+        }
+    });
+}
+
+function getCurrentAPIKey() {
+    const config = API_CONFIGS[currentProvider];
+    
+    // Puter.js不需要API密钥
+    if (currentProvider === 'puter') {
+        return null;
+    }
+    
+    const key = config.keys[currentAPIKeyIndex % config.keys.length];
+    currentAPIKeyIndex++;
+    return key;
+}
+
+function getCurrentModel() {
+    return currentModel;
+}
+
+function getCurrentProvider() {
+    return currentProvider;
+}
+
+function createNewConversation() {
+    const conversation = {
+        id: Date.now().toString(),
+        title: 'New Chat',
+        messages: [],
+        createdAt: new Date().toISOString()
+    };
+    
+    conversations.unshift(conversation);
+    currentConversationId = conversation.id;
+    
+    saveConversations();
+    renderChatHistory();
+    renderMessages();
+    updateChatTitle();
+}
+
+function getCurrentConversation() {
+    return conversations.find(conv => conv.id === currentConversationId) || conversations[0];
+}
+
+function saveConversations() {
+    localStorage.setItem('heibai_conversations', JSON.stringify(conversations));
+    localStorage.setItem('heibai_current_conversation', currentConversationId);
+}
+
+function renderChatHistory() {
+    const historyContainer = document.getElementById('chatHistory');
+    historyContainer.innerHTML = '';
+    
+    conversations.forEach(conv => {
+        const chatItem = document.createElement('div');
+        chatItem.className = `chat-item ${conv.id === currentConversationId ? 'active' : ''}`;
+        
+        chatItem.innerHTML = `
+            <i class="fas fa-message"></i>
+            <div class="chat-title">${conv.title}</div>
+            <button class="chat-delete" onclick="deleteConversation('${conv.id}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        
+        chatItem.addEventListener('click', (e) => {
+            if (!e.target.closest('.chat-delete')) {
+                switchConversation(conv.id);
+            }
+        });
+        
+        historyContainer.appendChild(chatItem);
+    });
+}
+
+function switchConversation(conversationId) {
+    currentConversationId = conversationId;
+    saveConversations();
+    renderChatHistory();
+    renderMessages();
+    updateChatTitle();
+}
+
+function deleteConversation(conversationId) {
+    if (conversations.length <= 1) {
+        alert('You need to keep at least one conversation');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to delete this conversation?')) return;
+    
+    conversations = conversations.filter(conv => conv.id !== conversationId);
+    
+    if (currentConversationId === conversationId) {
+        currentConversationId = conversations[0].id;
+    }
+    
+    saveConversations();
+    renderChatHistory();
+    renderMessages();
+    updateChatTitle();
+}
+
+function updateChatTitle() {
+    const conversation = getCurrentConversation();
+    document.getElementById('chatTitle').textContent = conversation ? conversation.title : 'New Chat';
+}
+
+function renderMessages() {
+    const messagesContainer = document.getElementById('chatMessages');
+    const conversation = getCurrentConversation();
+    
+    messagesContainer.innerHTML = '';
+    
+    if (!conversation || !conversation.messages.length) {
+        const welcomeMessage = document.createElement('div');
+        welcomeMessage.className = 'message bot';
+        welcomeMessage.innerHTML = `
+            <div class="message-avatar bot">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <p>👋 Welcome to HeiBai AI! How can I assist you today?</p>
+            </div>
+        `;
+        messagesContainer.appendChild(welcomeMessage);
+        return;
+    }
+    
+    conversation.messages.forEach((message, index) => {
+        const messageElement = createMessageElement(message, index);
+        messagesContainer.appendChild(messageElement);
+    });
+    
+    scrollToBottom();
+}
+
+function createMessageElement(message, index) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${message.role}`;
+    
+    const avatar = document.createElement('div');
+    avatar.className = `message-avatar ${message.role}`;
+    avatar.innerHTML = message.role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+    
+    const content = document.createElement('div');
+    content.className = 'message-content';
+    content.innerHTML = formatMessage(message.content);
+    
+    const actions = document.createElement('div');
+    actions.className = 'message-actions';
+    
+    if (message.role === 'assistant') {
+        actions.innerHTML = `
+            <button class="action-btn" onclick="copyMessage(${index})">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+            <button class="action-btn" onclick="regenerateMessage(${index})">
+                <i class="fas fa-refresh"></i> Regenerate
+            </button>
+        `;
+    } else {
+        actions.innerHTML = `
+            <button class="action-btn" onclick="editMessage(${index})">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        `;
+    }
+    
+    const contentWrapper = document.createElement('div');
+    contentWrapper.appendChild(content);
+    contentWrapper.appendChild(actions);
+    
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(contentWrapper);
+    
+    return messageDiv;
+}
+
+function formatMessage(content) {
+    content = content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+    
+    content = content.replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
+        return `<pre><code>${code.trim()}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>`;
+    });
+    
+    return content;
+}
+
+function copyCode(button) {
+    const code = button.previousElementSibling.textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        button.textContent = 'Copied';
+        setTimeout(() => {
+            button.textContent = 'Copy';
+        }, 2000);
+    });
+}
+
+function copyMessage(index) {
+    const conversation = getCurrentConversation();
+    const message = conversation.messages[index];
+    navigator.clipboard.writeText(message.content).then(() => {
+        const btn = event.target.closest('.action-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+        }, 2000);
+    });
+}
+
+function editMessage(index) {
+    const conversation = getCurrentConversation();
+    const message = conversation.messages[index];
+    document.getElementById('chatInput').value = message.content;
+    document.getElementById('chatInput').focus();
+    autoResizeTextarea();
+}
+
+function regenerateMessage(index) {
+    const conversation = getCurrentConversation();
+    const userMessage = conversation.messages[index - 1];
+    
+    if (userMessage && userMessage.role === 'user') {
+        conversation.messages = conversation.messages.slice(0, index);
+        saveConversations();
+        renderMessages();
+        generateAIResponse(userMessage.content);
+    }
+}
+
+function autoResizeTextarea() {
+    const textarea = document.getElementById('chatInput');
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+}
+
+function scrollToBottom() {
+    const messagesContainer = document.getElementById('chatMessages');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+async function sendMessage() {
+    try {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        const customApiKey = localStorage.getItem('heibai_custom_api_key');
+        if (!customApiKey && !API_CONFIGS.gemini.keys.length) {
+            openSettings();
+            return;
+        }
+    
+        const conversation = getCurrentConversation();
+        setInputState(false);
+        
+        const userMessage = {
+            role: 'user',
+            content: message,
+            timestamp: new Date().toISOString()
+        };
+        
+        conversation.messages.push(userMessage);
+        
+        if (conversation.messages.length === 1) {
+            conversation.title = generateConversationTitle(message);
+        }
+        
+        input.value = '';
+        autoResizeTextarea();
+        
+        saveConversations();
+        renderChatHistory();
+        renderMessages();
+        
+        try {
+            await generateAIResponse(message);
+        } catch (error) {
+            hideTypingIndicator();
+            
+            let errorMessage = 'Sorry, there was an error processing your message.';
+            if (error.message.includes('quota')) {
+                errorMessage += ' API quota exceeded. Please try again later.';
+            } else if (error.message.includes('network')) {
+                errorMessage += ' Network connection issue. Please check your connection.';
+            } else {
+                errorMessage += ' Please try again later.';
+            }
+            
+            showErrorMessage(errorMessage);
+            console.error('Error:', error);
+            
+            conversation.messages.pop();
+            renderMessages();
+        }
+        
+        setInputState(true);
+    } catch (error) {
+        console.error('Error in sendMessage:', error);
+        setInputState(true);
+    }
+}
+
+async function generateAIResponse(userMessage) {
+    const conversation = getCurrentConversation();
+    
+    showTypingIndicator();
+    
+    try {
+        // 确保知识库已加载
+        if (knowledgeBase.length === 0) {
+            console.log('Knowledge base not loaded, loading now...');
+            await loadKnowledgeBase();
+        }
+        
+        // 搜索知识库
+        const knowledgeResults = searchKnowledgeBase(userMessage);
+        console.log('Knowledge search results:', knowledgeResults.length);
+        console.log('Query:', userMessage);
+        console.log('Results:', knowledgeResults.map(r => ({ fileName: r.fileName, relevance: r.relevance, matchType: r.matchType })));
+        
+        // 生成增强的提示词
+        const enhancedPrompt = generateKnowledgePrompt(userMessage, knowledgeResults);
+        console.log('Enhanced prompt length:', enhancedPrompt.length);
+        
+        // 如果没有找到知识库结果，强制包含一些基础文件
+        let finalPrompt = enhancedPrompt;
+        if (knowledgeResults.length === 0) {
+            console.log('No knowledge base results found, including basic files...');
+            const basicFiles = knowledgeBase.filter(item => 
+                item.fileName.includes('README') || 
+                item.fileName.includes('CLIENT_OPTIONS') ||
+                item.fileName.includes('CALLBACKS')
+            ).slice(0, 3);
+            
+            if (basicFiles.length > 0) {
+                finalPrompt = `你是一个专业的AI助手，专门帮助人们编写用于Bloxd.io游戏的代码。在Bloxd.io中，你可以在代码块中编写代码，右键点击运行，还可以编写定义可编辑回调列表的World Code。
+
+重要指令：
+1. 100%基于以下知识库文档信息回答问题
+2. 专门针对Bloxd.io游戏编程提供帮助
+3. 提供的代码示例必须可以在Bloxd.io中运行
+4. 代码示例必须使用代码块格式
+5. 如果知识库中没有相关信息，请明确说明"知识库中没有相关信息"
+
+知识库文档信息：
+${basicFiles.map((result, index) => `
+${index + 1}. 文件: ${result.fileName}
+描述: ${result.description}
+内容摘要: ${result.content.substring(0, 600)}${result.content.length > 600 ? '...' : ''}
+`).join('')}
+
+用户问题: ${userMessage}
+
+回答要求：
+1. 专门针对Bloxd.io游戏编程提供帮助
+2. 提供的代码示例必须可以在Bloxd.io中运行
+3. 代码示例使用\`\`\`代码块\`\`\`格式
+4. 如果知识库信息不足，明确说明"知识库中没有相关信息"
+
+请开始回答：`;
+            }
+        }
+        
+        const aiResponse = await callAPI(currentProvider, currentModel, finalPrompt);
+        
+        const assistantMessage = {
+            role: 'assistant',
+            content: aiResponse,
+            timestamp: new Date().toISOString(),
+            knowledgeUsed: knowledgeResults.map(r => r.fileName) // 记录使用的知识库文件
+        };
+        
+        conversation.messages.push(assistantMessage);
+        saveConversations();
+        
+        hideTypingIndicator();
+        renderMessages();
+        
+        // 更新知识库使用统计
+        if (knowledgeResults.length > 0) {
+            knowledgeUsageStats.sessionUsage++;
+            knowledgeUsageStats.totalUsage++;
+            localStorage.setItem('heibai_knowledge_total_usage', knowledgeUsageStats.totalUsage.toString());
+            showToast(`已使用 ${knowledgeResults.length} 个知识库文件`, 'info');
+        } else {
+            console.log('No knowledge base results found for query:', userMessage);
+        }
+        
+    } catch (error) {
+        console.error('Error generating AI response:', error);
+        hideTypingIndicator();
+        
+        let errorContent = 'Sorry, I am unable to respond at the moment.';
+        
+        if (error.message.includes('quota')) {
+            errorContent += ' API quota exceeded. Please try again later or use a custom API key.';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            errorContent += ' Network connection issue. Please check your internet connection.';
+        } else if (error.message.includes('401') || error.message.includes('403')) {
+            errorContent += ' API key is invalid or expired. Please update it in settings.';
+        } else {
+            errorContent += ' Please try again later.';
+        }
+        
+        const errorMessage = {
+            role: 'assistant',
+            content: errorContent,
+            timestamp: new Date().toISOString()
+        };
+        
+        conversation.messages.push(errorMessage);
+        saveConversations();
+        renderMessages();
+    }
+}
+
+async function callAPI(provider, model, prompt) {
+    switch (provider) {
+        case 'puter':
+            try {
+                const response = await puter.ai.chat(model, prompt, {
+                    temperature: 0.7,
+                    max_tokens: 2048
+                });
+                return response;
+            } catch (error) {
+                throw new Error(`Puter.js API Error: ${error.message}`);
+            }
+            
+        case 'gemini':
+            try {
+                const customApiKey = localStorage.getItem('heibai_custom_api_key');
+                const apiKey = customApiKey || getCurrentAPIKey();
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 2048,
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} - ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+                    throw new Error('Invalid API response format');
+                }
+                
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                throw error;
+            }
+            
+        case 'openai':
+            try {
+                const customApiKey = localStorage.getItem('heibai_custom_api_key');
+                const apiKey = customApiKey || getCurrentAPIKey();
+                
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 2048
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} - ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+                    throw new Error('Invalid API response format');
+                }
+                
+                return data.choices[0].message.content;
+            } catch (error) {
+                throw error;
+            }
+            
+        default:
+            throw new Error(`Unsupported provider: ${provider}`);
+    }
+}
+
+function showTypingIndicator() {
+    const messagesContainer = document.getElementById('chatMessages');
+    
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot';
+    typingDiv.id = 'typing-indicator';
+    
+    typingDiv.innerHTML = `
+        <div class="message-avatar bot">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+            <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+    `;
+    
+    messagesContainer.appendChild(typingDiv);
+    scrollToBottom();
+}
+
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typing-indicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+function toggleTheme() {
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    
+    body.classList.toggle('dark');
+    
+    if (body.classList.contains('dark')) {
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('heibai_theme', 'dark');
+    } else {
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        localStorage.setItem('heibai_theme', 'light');
+    }
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('heibai_theme');
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    
+    if (savedTheme === 'dark') {
+        body.classList.add('dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+}
+
+function openSettings() {
+    const modal = document.getElementById('settingsModal');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const providerSelect = document.getElementById('providerSelect');
+    const modelSelect = document.getElementById('modelSelect');
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    
+    const customApiKey = localStorage.getItem('heibai_custom_api_key');
+    const savedProvider = localStorage.getItem('heibai_provider') || 'gemini';
+    const savedModel = localStorage.getItem('heibai_model') || 'gemini-1.5-flash';
+    const savedTheme = localStorage.getItem('heibai_theme') || 'light';
+    const savedFontSize = localStorage.getItem('heibai_font_size') || '14';
+    
+    apiKeyInput.value = customApiKey || '';
+    providerSelect.value = savedProvider;
+    modelSelect.value = savedModel;
+    fontSizeSlider.value = savedFontSize;
+    document.getElementById('fontSizeValue').textContent = savedFontSize + 'px';
+    
+    document.querySelector(`input[name="theme"][value="${savedTheme}"]`).checked = true;
+    
+    updateModelOptions();
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    apiKeyInput.focus();
+}
+
+function closeSettings() {
+    const modal = document.getElementById('settingsModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function saveSettings() {
+    const apiKey = document.getElementById('apiKeyInput').value.trim();
+    const provider = document.getElementById('providerSelect').value;
+    const model = document.getElementById('modelSelect').value;
+    const theme = document.querySelector('input[name="theme"]:checked').value;
+    const fontSize = document.getElementById('fontSizeSlider').value;
+    const autoSave = document.getElementById('autoSaveCheckbox').checked;
+    const streamResponse = document.getElementById('streamResponseCheckbox').checked;
+    
+    if (apiKey) {
+        localStorage.setItem('heibai_custom_api_key', apiKey);
+    } else {
+        localStorage.removeItem('heibai_custom_api_key');
+    }
+    
+    localStorage.setItem('heibai_provider', provider);
+    localStorage.setItem('heibai_model', model);
+    localStorage.setItem('heibai_theme', theme);
+    localStorage.setItem('heibai_font_size', fontSize);
+    localStorage.setItem('heibai_auto_save', autoSave);
+    localStorage.setItem('heibai_stream_response', streamResponse);
+    
+    currentProvider = provider;
+    currentModel = model;
+    setTheme(theme);
+    document.documentElement.style.setProperty('--font-size', fontSize + 'px');
+    
+    closeSettings();
+    
+    showToast('Settings saved successfully');
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function showErrorMessage(message) {
+    showToast(message, 'error');
+}
+
+function setInputState(enabled) {
+    const input = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (input) input.disabled = !enabled;
+    if (sendBtn) sendBtn.disabled = !enabled;
+}
+
+function generateConversationTitle(message) {
+    const keywords = [
+        'hello', 'hi', 'help', 'question', 'need', 'want', 'can',
+        'how', 'what', 'why', 'where', 'when', 'who'
+    ];
+    
+    const lowerMessage = message.toLowerCase();
+    
+    for (const keyword of keywords) {
+        if (lowerMessage.includes(keyword)) {
+            const cleanMessage = message.replace(/[^\w\s]/g, '').trim();
+            const words = cleanMessage.split(/\s+/);
+            const titleWords = words.slice(0, 3).join(' ');
+            return titleWords.length > 10 ? titleWords.substring(0, 10) + '...' : titleWords || 'New Chat';
+        }
+    }
+    
+    const cleanMessage = message.replace(/[^\w\s]/g, '').trim();
+    return cleanMessage.length > 10 ? cleanMessage.substring(0, 10) + '...' : cleanMessage || 'New Chat';
+}
+
+function clearAllConversations() {
+    if (!confirm('Are you sure you want to clear all conversations? This cannot be undone.')) {
+        return;
+    }
+    
+    conversations = [];
+    localStorage.removeItem('heibai_conversations');
+    localStorage.removeItem('heibai_current_conversation');
+    
+    createNewConversation();
+}
+
+function switchSettingsTab(tabName) {
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+    });
+    
+    document.querySelectorAll('.settings-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === `${tabName}-settings`);
+    });
+    
+    // 如果切换到知识库面板，更新状态
+    if (tabName === 'knowledge') {
+        updateKnowledgeStatus();
+    }
+}
+
+function updateModelOptions() {
+    const provider = document.getElementById('providerSelect').value;
+    const modelSelect = document.getElementById('modelSelect');
+    const models = API_CONFIGS[provider].models;
+    
+    modelSelect.innerHTML = '';
+    models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model;
+        option.textContent = model;
+        modelSelect.appendChild(option);
+    });
+    
+    const savedModel = localStorage.getItem('heibai_model');
+    if (savedModel && models.includes(savedModel)) {
+        modelSelect.value = savedModel;
+    }
+}
+
+function setTheme(theme) {
+    const body = document.body;
+    
+    if (theme === 'auto') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        body.classList.toggle('dark', prefersDark);
+    } else {
+        body.classList.toggle('dark', theme === 'dark');
+    }
+    
+    const themeToggle = document.getElementById('themeToggle');
+    if (body.classList.contains('dark')) {
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+    
+    localStorage.setItem('heibai_theme', theme);
+}
+
+function clearAllData() {
+    if (confirm('Are you sure you want to clear all data? This will delete all conversations and settings.')) {
+        localStorage.removeItem('heibai_conversations');
+        localStorage.removeItem('heibai_current_conversation');
+        localStorage.removeItem('heibai_custom_api_key');
+        localStorage.removeItem('heibai_provider');
+        localStorage.removeItem('heibai_model');
+        localStorage.removeItem('heibai_theme');
+        localStorage.removeItem('heibai_font_size');
+        
+        conversations = [];
+        currentConversationId = null;
+        
+        createNewConversation();
+        closeSettings();
+    }
+}
+
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('settingsModal');
+    if (e.target === modal) {
+        closeSettings();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSettings();
+    }
+});
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
+
+// 知识库系统函数
+async function loadKnowledgeBase() {
+    try {
+        console.log('Loading knowledge base...');
+        
+        // 知识库文件列表 - 严格按照db文件夹中的实际文件
+        const knowledgeFiles = [
+            '/db/README.md',
+            '/db/CALLBACKS.md',
+            '/db/CLIENT_OPTIONS.md',
+            '/db/ENTITY_SETTINGS.md',
+            '/db/MOB_SETTINGS.md',
+            '/db/PARTICLES.md',
+            '/db/SOUND_NAMES.md',
+            '/db/texturepacksREADME.md',
+            '/db/all_pages_text.txt'
+        ];
+        
+        knowledgeBase = [];
+        knowledgeIndex = {};
+        
+        for (const file of knowledgeFiles) {
+            try {
+                console.log(`Attempting to load: ${file}`);
+                const response = await fetch(file);
+                
+                if (response.ok) {
+                    const content = await response.text();
+                    const fileName = file.split('/').pop();
+                    
+                    console.log(`Successfully loaded: ${fileName} (${content.length} characters)`);
+                    
+                    // 解析文件内容，提取关键词和描述
+                    const keywords = extractKeywords(content, fileName);
+                    const description = extractDescription(content, fileName);
+                    
+                    const knowledgeItem = {
+                        fileName: fileName,
+                        filePath: file,
+                        content: content,
+                        keywords: keywords,
+                        description: description,
+                        lastModified: new Date().toISOString()
+                    };
+                    
+                    knowledgeBase.push(knowledgeItem);
+                    
+                    // 建立索引
+                    keywords.forEach(keyword => {
+                        if (!knowledgeIndex[keyword]) {
+                            knowledgeIndex[keyword] = [];
+                        }
+                        knowledgeIndex[keyword].push(knowledgeItem);
+                    });
+                    
+                    console.log(`Loaded knowledge file: ${fileName} with ${keywords.length} keywords`);
+                } else {
+                    console.warn(`Failed to load ${file}: ${response.status} ${response.statusText}`);
+                }
+            } catch (error) {
+                console.warn(`Error loading ${file}:`, error);
+            }
+        }
+        
+        console.log(`Knowledge base loaded successfully: ${knowledgeBase.length} files`);
+        console.log(`Indexed keywords: ${Object.keys(knowledgeIndex).length}`);
+        
+        // 更新知识库状态显示
+        updateKnowledgeStatus();
+        
+        // 显示知识库状态
+        if (knowledgeBase.length > 0) {
+            showToast(`知识库已加载: ${knowledgeBase.length} 个文件`, 'success');
+        } else {
+            showToast('知识库加载失败，请检查文件路径', 'error');
+        }
+        
+    } catch (error) {
+        console.error('Error loading knowledge base:', error);
+        showToast('知识库加载失败，将使用基础模式', 'warning');
+    }
+}
+
+function extractKeywords(content, fileName) {
+    const keywords = [];
+    
+    // 基于文件名添加关键词 - 针对Bloxd.io游戏编程
+    if (fileName.includes('README')) keywords.push('readme', '文档', '说明', '介绍', 'bloxd');
+    if (fileName.includes('CALLBACKS')) keywords.push('callbacks', '回调', '事件', '监听', 'worldcode', 'world code');
+    if (fileName.includes('CLIENT_OPTIONS')) keywords.push('client', '客户端', '选项', '配置', '设置', 'bloxd');
+    if (fileName.includes('ENTITY_SETTINGS')) keywords.push('entity', '实体', '设置', '配置', '生物', '物体');
+    if (fileName.includes('MOB_SETTINGS')) keywords.push('mob', '生物', '怪物', '设置', '配置', 'npc');
+    if (fileName.includes('PARTICLES')) keywords.push('particles', '粒子', '特效', '效果', 'particle');
+    if (fileName.includes('SOUND_NAMES')) keywords.push('sound', '声音', '音频', '音效', '名称', 'sound names');
+    if (fileName.includes('texturepacks')) keywords.push('texture', '材质', '贴图', '皮肤', '包', 'texture pack');
+    if (fileName.includes('all_pages_text')) keywords.push('all', '全部', '完整', '文本', '内容', 'pages');
+    
+    // 从内容中提取关键词
+    const text = content.toLowerCase();
+    
+    // Bloxd相关关键词
+    if (text.includes('bloxd')) keywords.push('bloxd', '游戏', 'bloxd.io');
+    if (text.includes('worldbuilder')) keywords.push('worldbuilder', '世界构建器', 'world builder');
+    if (text.includes('worldedit')) keywords.push('worldedit', '世界编辑', 'world edit');
+    if (text.includes('block')) keywords.push('block', '方块', 'blocks');
+    if (text.includes('command')) keywords.push('command', '命令', 'cmd');
+    if (text.includes('api')) keywords.push('api', '接口', 'application programming interface');
+    if (text.includes('sdk')) keywords.push('sdk', '开发包', 'software development kit');
+    
+    // 代码相关关键词
+    if (text.includes('javascript')) keywords.push('javascript', 'js', '代码', 'code');
+    if (text.includes('function')) keywords.push('function', '函数', '功能');
+    if (text.includes('callback')) keywords.push('callback', '回调', '事件处理');
+    if (text.includes('event')) keywords.push('event', '事件', '监听');
+    if (text.includes('world')) keywords.push('world', '世界', 'world code');
+    
+    // 通用技术关键词
+    if (text.includes('html')) keywords.push('html');
+    if (text.includes('css')) keywords.push('css');
+    if (text.includes('json')) keywords.push('json');
+    if (text.includes('glb')) keywords.push('glb', '3d模型');
+    if (text.includes('png')) keywords.push('png', '图片');
+    if (text.includes('jpg')) keywords.push('jpg', '图片');
+    
+    // 功能相关关键词
+    if (text.includes('功能') || text.includes('feature')) keywords.push('功能', 'feature', 'capability');
+    if (text.includes('帮助') || text.includes('help')) keywords.push('帮助', 'help', 'assist');
+    if (text.includes('代码') || text.includes('code')) keywords.push('代码', 'code', 'programming');
+    if (text.includes('问题') || text.includes('problem')) keywords.push('问题', 'problem', 'issue');
+    if (text.includes('解决') || text.includes('solve')) keywords.push('解决', 'solve', 'solution');
+    
+    // 游戏开发相关关键词
+    if (text.includes('minecraft')) keywords.push('minecraft', 'mc', '游戏');
+    if (text.includes('player')) keywords.push('player', '玩家', '用户');
+    if (text.includes('armour') || text.includes('armor')) keywords.push('armour', 'armor', '盔甲', '装备');
+    if (text.includes('sword')) keywords.push('sword', '剑', '武器');
+    if (text.includes('bread')) keywords.push('bread', '面包', '食物');
+    if (text.includes('join')) keywords.push('join', '加入', '进入');
+    if (text.includes('plugin')) keywords.push('plugin', '插件', '扩展');
+    
+    // 特效相关关键词
+    if (text.includes('particle')) keywords.push('particle', '粒子', '特效', 'particles');
+    if (text.includes('sound')) keywords.push('sound', '声音', '音效', 'audio');
+    if (text.includes('texture')) keywords.push('texture', '材质', '贴图', '皮肤');
+    if (text.includes('effect')) keywords.push('effect', '效果', '特效');
+    
+    // 去重并返回
+    return [...new Set(keywords)];
+}
+
+function extractDescription(content, fileName) {
+    // 尝试从文件开头提取描述
+    const lines = content.split('\n');
+    for (let i = 0; i < Math.min(10, lines.length); i++) {
+        const line = lines[i].trim();
+        if (line && !line.startsWith('#') && !line.startsWith('//') && line.length > 10) {
+            return line.substring(0, 100) + (line.length > 100 ? '...' : '');
+        }
+    }
+    
+    // 如果没有找到合适的描述，使用文件名
+    return `知识库文件: ${fileName}`;
+}
+
+function searchKnowledgeBase(query) {
+    if (!knowledgeBase.length) return [];
+    
+    const queryLower = query.toLowerCase();
+    const results = [];
+    
+    console.log('Searching knowledge base for query:', query);
+    console.log('Available keywords:', Object.keys(knowledgeIndex));
+    
+    // 1. 精确关键词匹配
+    const matchedKeywords = Object.keys(knowledgeIndex).filter(keyword => 
+        queryLower.includes(keyword.toLowerCase())
+    );
+    
+    console.log('Matched keywords:', matchedKeywords);
+    
+    matchedKeywords.forEach(keyword => {
+        knowledgeIndex[keyword].forEach(item => {
+            if (!results.find(r => r.fileName === item.fileName)) {
+                results.push({
+                    ...item,
+                    relevance: 10, // 高相关性
+                    matchType: 'keyword'
+                });
+            }
+        });
+    });
+    
+    // 2. 内容搜索
+    knowledgeBase.forEach(item => {
+        const contentLower = item.content.toLowerCase();
+        let relevance = 0;
+        
+        // 计算相关性分数
+        const words = queryLower.split(/\s+/);
+        words.forEach(word => {
+            if (word.length > 2) {
+                const count = (contentLower.match(new RegExp(word, 'g')) || []).length;
+                relevance += count;
+            }
+        });
+        
+        if (relevance > 0) {
+            const existingResult = results.find(r => r.fileName === item.fileName);
+            if (existingResult) {
+                existingResult.relevance += relevance;
+            } else {
+                results.push({
+                    ...item,
+                    relevance: relevance,
+                    matchType: 'content'
+                });
+            }
+        }
+    });
+    
+    // 3. 智能匹配 - 对于特定类型的问题，强制包含相关文件
+    if (queryLower.includes('what can') || queryLower.includes('what do') || queryLower.includes('abilities') || queryLower.includes('capabilities')) {
+        // 对于"what can you do"类型的问题，包含README和CALLBACKS
+        const helpFiles = knowledgeBase.filter(item => 
+            item.fileName.includes('README') || 
+            item.fileName.includes('CALLBACKS') ||
+            item.fileName.includes('CLIENT_OPTIONS')
+        );
+        helpFiles.forEach(item => {
+            if (!results.find(r => r.fileName === item.fileName)) {
+                results.push({
+                    ...item,
+                    relevance: 15, // 最高相关性
+                    matchType: 'smart_match'
+                });
+            }
+        });
+    }
+    
+    if (queryLower.includes('code') || queryLower.includes('callback') || queryLower.includes('world') || queryLower.includes('bloxd') || queryLower.includes('block')) {
+        // 对于Bloxd.io代码相关问题，包含CALLBACKS和CLIENT_OPTIONS
+        const codeFiles = knowledgeBase.filter(item => 
+            item.fileName.includes('CALLBACKS') || 
+            item.fileName.includes('CLIENT_OPTIONS') ||
+            item.fileName.includes('ENTITY_SETTINGS') ||
+            item.fileName.includes('MOB_SETTINGS')
+        );
+        codeFiles.forEach(item => {
+            if (!results.find(r => r.fileName === item.fileName)) {
+                results.push({
+                    ...item,
+                    relevance: 15, // 最高相关性
+                    matchType: 'smart_match'
+                });
+            }
+        });
+    }
+    
+    if (queryLower.includes('particle') || queryLower.includes('sound') || queryLower.includes('texture') || queryLower.includes('effect')) {
+        // 对于特效、声音、材质相关问题，包含相关文件
+        const effectFiles = knowledgeBase.filter(item => 
+            item.fileName.includes('PARTICLES') || 
+            item.fileName.includes('SOUND_NAMES') ||
+            item.fileName.includes('texturepacksREADME')
+        );
+        effectFiles.forEach(item => {
+            if (!results.find(r => r.fileName === item.fileName)) {
+                results.push({
+                    ...item,
+                    relevance: 15, // 最高相关性
+                    matchType: 'smart_match'
+                });
+            }
+        });
+    }
+    
+    // 4. 按相关性排序并限制结果数量
+    const sortedResults = results
+        .sort((a, b) => b.relevance - a.relevance)
+        .slice(0, 5); // 最多返回5个最相关的结果
+    
+    console.log('Final search results:', sortedResults.map(r => ({ fileName: r.fileName, relevance: r.relevance, matchType: r.matchType })));
+    
+    return sortedResults;
+}
+
+function generateKnowledgePrompt(userMessage, knowledgeResults) {
+    if (!knowledgeResults.length) {
+        return userMessage;
+    }
+    
+    let prompt = `你是一个专业的AI助手，专门帮助人们编写用于Bloxd.io游戏的代码。在Bloxd.io中，你可以在代码块中编写代码，右键点击运行，还可以编写定义可编辑回调列表的World Code。
+
+重要指令：
+1. 100%基于以下知识库文档信息回答问题
+2. 专门针对Bloxd.io游戏编程提供帮助
+3. 提供的代码示例必须可以在Bloxd.io中运行
+4. 代码示例必须使用代码块格式
+5. 如果知识库中没有相关信息，请明确说明"知识库中没有相关信息"
+
+知识库文档信息：
+`;
+    
+    knowledgeResults.forEach((result, index) => {
+        prompt += `\n${index + 1}. 文件: ${result.fileName}
+描述: ${result.description}
+内容摘要: ${result.content.substring(0, 800)}${result.content.length > 800 ? '...' : ''}
+`;
+    });
+    
+    prompt += `\n用户问题: ${userMessage}
+
+回答要求：
+1. 专门针对Bloxd.io游戏编程提供帮助
+2. 提供的代码示例必须可以在Bloxd.io中运行
+3. 代码示例使用\`\`\`代码块\`\`\`格式
+4. 如果知识库信息不足，明确说明"知识库中没有相关信息"
+
+请开始回答：`;
+    
+    return prompt;
+}
+
+function updateKnowledgeStatus() {
+    // 更新知识库状态显示
+    document.getElementById('knowledgeFileCount').textContent = knowledgeBase.length;
+    document.getElementById('knowledgeKeywordCount').textContent = Object.keys(knowledgeIndex).length;
+    document.getElementById('knowledgeLastUpdate').textContent = new Date().toLocaleString('zh-CN');
+    
+    // 更新使用统计
+    document.getElementById('sessionUsage').textContent = knowledgeUsageStats.sessionUsage;
+    document.getElementById('totalUsage').textContent = knowledgeUsageStats.totalUsage;
+    
+    // 更新文件列表
+    const filesList = document.getElementById('knowledgeFilesList');
+    if (knowledgeBase.length > 0) {
+        filesList.innerHTML = knowledgeBase.map(item => `
+            <div class="knowledge-file-item">
+                <div class="file-name">${item.fileName}</div>
+                <div class="file-description">${item.description}</div>
+                <div class="file-keywords">关键词: ${item.keywords.slice(0, 5).join(', ')}</div>
+            </div>
+        `).join('');
+    } else {
+        filesList.innerHTML = '<div class="no-files">没有找到知识库文件</div>';
+    }
+}
+
+async function testKnowledgeBase() {
+    const testQuery = '测试知识库功能';
+    const results = searchKnowledgeBase(testQuery);
+    
+    if (results.length > 0) {
+        showToast(`知识库测试成功！找到 ${results.length} 个相关文件`, 'success');
+        console.log('Knowledge base test results:', results);
+        
+        // 显示找到的文件
+        const fileNames = results.map(r => r.fileName).join(', ');
+        addConsoleLine(`测试查询: "${testQuery}"`);
+        addConsoleLine(`找到文件: ${fileNames}`);
+        addConsoleLine(`相关性: ${results.map(r => `${r.fileName}(${r.relevance})`).join(', ')}`);
+    } else {
+        showToast('知识库测试失败，没有找到相关文件', 'warning');
+        addConsoleLine(`测试查询: "${testQuery}"`);
+        addConsoleLine('没有找到相关文件');
+        
+        // 显示可用的关键词
+        const availableKeywords = Object.keys(knowledgeIndex).slice(0, 10);
+        addConsoleLine(`可用关键词: ${availableKeywords.join(', ')}...`);
+    }
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// 调试功能
+function showDebugInfo() {
+    const debugConsole = document.getElementById('debugConsole');
+    debugConsole.innerHTML = '';
+    
+    // 添加知识库状态信息
+    addConsoleLine(`知识库状态: ${knowledgeBase.length} 个文件已加载`);
+    addConsoleLine(`索引关键词: ${Object.keys(knowledgeIndex).length} 个`);
+    addConsoleLine(`可用关键词: ${Object.keys(knowledgeIndex).slice(0, 20).join(', ')}...`);
+    
+    // 添加文件列表
+    knowledgeBase.forEach((item, index) => {
+        addConsoleLine(`文件 ${index + 1}: ${item.fileName} (${item.keywords.length} 个关键词)`);
+    });
+    
+    // 添加使用统计
+    addConsoleLine(`本次会话使用: ${knowledgeUsageStats.sessionUsage} 次`);
+    addConsoleLine(`总使用次数: ${knowledgeUsageStats.totalUsage} 次`);
+}
+
+function addConsoleLine(message) {
+    const debugConsole = document.getElementById('debugConsole');
+    const line = document.createElement('div');
+    line.className = 'console-line';
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+    debugConsole.appendChild(line);
+    debugConsole.scrollTop = debugConsole.scrollHeight;
+}
+
+function clearConsole() {
+    const debugConsole = document.getElementById('debugConsole');
+    debugConsole.innerHTML = '<div class="console-line">控制台已清除</div>';
+}
+
+// 重写console.log以捕获日志
+const originalConsoleLog = console.log;
+console.log = function(...args) {
+    originalConsoleLog.apply(console, args);
+    
+    // 将日志添加到调试控制台
+    const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+    ).join(' ');
+    
+    if (message.includes('knowledge') || message.includes('Knowledge') || message.includes('知识库')) {
+        addConsoleLine(message);
+    }
+};
+</script>
+</body>
+</html>
